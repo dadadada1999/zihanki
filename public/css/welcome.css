@@ -1,0 +1,51 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+}
+
+a {
+    color: inherit;
+}
+
+.welcome-body {
+    font-family: 'Nunito', sans-serif;
+}
+
+.welcome {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f3f4f6;
+}
+
+.welcome__nav {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 16px 24px;
+}
+
+.welcome__nav a {
+    margin-left: 16px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.welcome__content {
+    text-align: center;
+}
+
+.welcome__content h1 {
+    margin-bottom: 16px;
+}
+
+.welcome__content p {
+    margin: 0;
+}

@@ -1,0 +1,82 @@
+.product_edit-form-group {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.product_edit-label {
+    width: 120px;
+}
+
+.product_edit-input {
+    width: 300px;
+    height: 35px;
+}
+
+.product_edit-textarea {
+    width: 300px;
+    height: 100px;
+}
+
+.product_edit-submit-button {
+    margin-top: 10px;
+}
+
+.product_edit-back-link {
+    display: inline-block;
+    margin-top: 20px;
+}
+
+.product_edit-area {
+    border: 1px solid #000000;
+    padding: 30px;
+    width: 700px;
+}
+
+.product_edit-button-area {
+    margin-top: 30px;
+}
+
+.product_edit-submit-button,
+.product_edit-back-button {
+    box-sizing: border-box;
+    width: 100px;
+    height: 40px;
+    padding: 0;
+    font-size: 14px;
+    font-family: inherit;
+    line-height: 1;
+    cursor: pointer;
+    color: #000000;
+}
+
+.product_edit-submit-button {
+    margin-right: 20px;
+    background-color: #f0ad4e;
+    border: 1px solid #d8922d;
+}
+
+.product_edit-back-button {
+    background-color: #87ceeb;
+    border: 1px solid #5aa9c9;
+}
+
+.product_edit-required {
+    color: red;
+}
+
+.product_edit-error {
+    color: red;
+    margin-bottom: 20px;
+}
+
+.product_edit-select {
+    width: 300px;
+    height: 40px;
+    padding: 8px 12px;
+}
+
+.product_edit-id-label {
+    font-style: italic;
+}
