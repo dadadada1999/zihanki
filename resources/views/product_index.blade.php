@@ -144,3 +144,5 @@
         </tr>
     @endforeach
 </table>
+
+<script src="{{ asset('js/product_index.js') }}"></script>

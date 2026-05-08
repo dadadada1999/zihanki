@@ -123,16 +123,32 @@
         </div>
 
         <div class="product_edit-form-group">
-            <label class="product_edit-label">
-                商品画像
-            </label>
+    <label class="product_edit-label">
+        商品画像
+    </label>
 
-            <input
-                class="product_edit-file"
-                type="file"
-                name="img_path"
-            >
+    @if ($product->img_path)
+
+        <img
+            class="product_edit-image"
+            src="{{ asset('storage/' . $product->img_path) }}"
+            alt="商品画像"
+        >
+
+    @else
+
+        <div class="product_edit-no-image">
+            画像は登録されていません
         </div>
+
+    @endif
+
+    <input
+        class="product_edit-file"
+        type="file"
+        name="img_path"
+    >
+</div>
 
         <div class="product_edit-button-area">
             <button

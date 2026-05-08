@@ -21,7 +21,7 @@ class ProductController extends Controller
             $company_id
         );
 
-        $companies = Company::all();
+        $companies = Company::getCompanyList();
 
         return view('product_index', [
             'products' => $products,
@@ -36,7 +36,7 @@ class ProductController extends Controller
      */
     public function create()
     {
-        $companies = Company::all();
+        $companies = Company::getCompanyList();
 
         return view('product_create', [
             'companies' => $companies,
@@ -111,7 +111,7 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::getProductDetail($id);
-        $companies = Company::all();
+        $companies = Company::getCompanyList();
 
         return view('product_edit', [
             'product' => $product,
@@ -149,14 +149,15 @@ class ProductController extends Controller
         }
 
         Product::updateProduct(
-            $request,
             $id,
+            $request->input('product_name'),
+            $request->input('company_id'),
+            $request->input('price'),
+            $request->input('stock'),
+            $request->input('comment'),
             $img_path
         );
 
-        return redirect()->route(
-            'product.detail',
-            $id
-        );
+        return redirect()->route('product.edit', $id);
     }
 }

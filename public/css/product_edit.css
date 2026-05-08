@@ -93,3 +93,13 @@
 .product_edit-id-label {
     font-style: italic;
 }
+
+.product_edit-image {
+    width: 150px;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+.product_edit-no-image {
+    margin-bottom: 10px;
+}

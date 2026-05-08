@@ -10,6 +10,9 @@ class Product extends Model
 {
     use HasFactory;
 
+    /**
+     * メーカーリレーション
+     */
     public function company()
     {
         return $this->belongsTo(Company::class);
@@ -20,7 +23,7 @@ class Product extends Model
      */
     public static function getProductList()
     {
-        return self::all();
+        return self::with('company')->get();
     }
 
     /**
@@ -28,7 +31,7 @@ class Product extends Model
      */
     public static function searchProducts($product_name, $company_id)
     {
-        $query = self::query();
+        $query = self::with('company');
 
         if (!empty($product_name)) {
             $query->where(
@@ -88,21 +91,28 @@ class Product extends Model
      */
     public static function getProductDetail($id)
     {
-        return self::find($id);
+        return self::with('company')->find($id);
     }
 
     /**
      * 商品更新
      */
-    public static function updateProduct($request, $id, $img_path)
-    {
+    public static function updateProduct(
+        $id,
+        $product_name,
+        $company_id,
+        $price,
+        $stock,
+        $comment,
+        $img_path
+    ) {
         $product = self::find($id);
 
-        $product->product_name = $request->product_name;
-        $product->company_id = $request->company_id;
-        $product->price = $request->price;
-        $product->stock = $request->stock;
-        $product->comment = $request->comment;
+        $product->product_name = $product_name;
+        $product->company_id = $company_id;
+        $product->price = $price;
+        $product->stock = $stock;
+        $product->comment = $comment;
         $product->img_path = $img_path;
 
         $product->save();
