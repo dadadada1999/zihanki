@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Company;
 
 class ProductController extends Controller
 {
@@ -13,17 +14,20 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $product_name = $request->input('product_name');
-        $company_name = $request->input('company_name');
+        $company_id = $request->input('company_id');
 
         $products = Product::searchProducts(
             $product_name,
-            $company_name
+            $company_id
         );
+
+        $companies = Company::all();
 
         return view('product_index', [
             'products' => $products,
             'product_name' => $product_name,
-            'company_name' => $company_name,
+            'company_id' => $company_id,
+            'companies' => $companies,
         ]);
     }
 
@@ -32,7 +36,11 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('product_create');
+        $companies = Company::all();
+
+        return view('product_create', [
+            'companies' => $companies,
+        ]);
     }
 
     /**
@@ -43,14 +51,14 @@ class ProductController extends Controller
         $request->validate(
             [
                 'product_name' => 'required',
-                'company_name' => 'required',
+                'company_id' => 'required',
                 'price' => 'required',
                 'stock' => 'required',
                 'img_path' => 'nullable|image',
             ],
             [
                 'product_name.required' => '商品名は必須です。',
-                'company_name.required' => '企業名は必須です。',
+                'company_id.required' => 'メーカー名は必須です。',
                 'price.required' => '価格は必須です。',
                 'stock.required' => '在庫数は必須です。',
             ]
@@ -65,7 +73,7 @@ class ProductController extends Controller
 
         Product::createProduct(
             $request->input('product_name'),
-            $request->input('company_name'),
+            $request->input('company_id'),
             $request->input('price'),
             $request->input('stock'),
             $request->input('comment'),
@@ -103,9 +111,11 @@ class ProductController extends Controller
     public function edit($id)
     {
         $product = Product::getProductDetail($id);
+        $companies = Company::all();
 
         return view('product_edit', [
             'product' => $product,
+            'companies' => $companies,
         ]);
     }
 
@@ -117,14 +127,14 @@ class ProductController extends Controller
         $request->validate(
             [
                 'product_name' => 'required',
-                'company_name' => 'required',
+                'company_id' => 'required',
                 'price' => 'required',
                 'stock' => 'required',
                 'img_path' => 'nullable|image',
             ],
             [
                 'product_name.required' => '商品名は必須です。',
-                'company_name.required' => 'メーカー名は必須です。',
+                'company_id.required' => 'メーカー名は必須です。',
                 'price.required' => '価格は必須です。',
                 'stock.required' => '在庫数は必須です。',
             ]

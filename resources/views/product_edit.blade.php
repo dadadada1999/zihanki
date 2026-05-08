@@ -5,19 +5,15 @@
 <div class="product_edit-area">
     {{-- バリデーションエラー --}}
     @if ($errors->any())
-
         <div class="product_edit-error">
-        <ul>
-            @foreach ($errors->all() as $error)
-
-                <li>
-                    {{ $error }}
-                </li>
-
-            @endforeach
-        </ul>
-    </div>
-
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>
+                        {{ $error }}
+                    </li>
+                @endforeach
+            </ul>
+        </div>
     @endif
 
     <form
@@ -28,16 +24,16 @@
         @csrf
 
         <div class="product_edit-form-group">
-    <label class="product_edit-label">
-    <span class="product_edit-id-label">
-        ID.
-    </span>
-</label>
+            <label class="product_edit-label">
+                <span class="product_edit-id-label">
+                    ID.
+                </span>
+            </label>
 
-    <div class="product_edit-id">
-        {{ $product->id }}.
-    </div>
-</div>
+            <div class="product_edit-id">
+                {{ $product->id }}.
+            </div>
+        </div>
 
         <div class="product_edit-form-group">
             <label class="product_edit-label">
@@ -51,69 +47,37 @@
                 class="product_edit-input"
                 type="text"
                 name="product_name"
-                value="{{ old('product_name') }}"
+                value="{{ old('product_name', $product->product_name) }}"
             >
         </div>
 
         <div class="product_edit-form-group">
-    <label class="product_edit-label">
-        メーカー名
-        <span class="product_edit-required">
-            *
-        </span>
-    </label>
+            <label class="product_edit-label">
+                メーカー名
+                <span class="product_edit-required">
+                    *
+                </span>
+            </label>
 
-    <select
-        class="product_edit-select"
-        name="company_name"
-    >
+            <select
+                class="product_edit-select"
+                name="company_id"
+            >
+                <option value="">
+                </option>
 
-        <option
-            value=""
-            selected
-            disabled
-            hidden
-        >
-        </option>
-
-        <option
-            value="コカ・コーラ"
-            @if (old('company_name') === 'コカ・コーラ')
-                selected
-            @endif
-        >
-            コカ・コーラ
-        </option>
-
-        <option
-            value="伊藤園"
-            @if (old('company_name') === '伊藤園')
-                selected
-            @endif
-        >
-            伊藤園
-        </option>
-
-        <option
-            value="サントリー"
-            @if (old('company_name') === 'サントリー')
-                selected
-            @endif
-        >
-            サントリー
-        </option>
-
-        <option
-            value="キリン"
-            @if (old('company_name') === 'キリン')
-                selected
-            @endif
-        >
-            キリン
-        </option>
-
-    </select>
-</div>
+                @foreach ($companies as $company)
+                    <option
+                        value="{{ $company->id }}"
+                        @if (old('company_id', $product->company_id) == $company->id)
+                            selected
+                        @endif
+                    >
+                        {{ $company->company_name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
 
         <div class="product_edit-form-group">
             <label class="product_edit-label">
@@ -127,7 +91,7 @@
                 class="product_edit-input"
                 type="text"
                 name="price"
-                value="{{ old('product_name') }}"
+                value="{{ old('price', $product->price) }}"
             >
         </div>
 
@@ -143,7 +107,7 @@
                 class="product_edit-input"
                 type="text"
                 name="stock"
-                value="{{ old('product_name') }}"
+                value="{{ old('stock', $product->stock) }}"
             >
         </div>
 
@@ -155,7 +119,7 @@
             <textarea
                 class="product_edit-textarea"
                 name="comment"
-            >{{ old('comment') }}</textarea>
+            >{{ old('comment', $product->comment) }}</textarea>
         </div>
 
         <div class="product_edit-form-group">
@@ -178,13 +142,12 @@
                 更新
             </button>
 
-            <button
+            <a
                 class="product_edit-back-button"
-                type="button"
-                onclick="location.href='{{ route('product.detail', $product->id) }}'"
+                href="{{ route('product.detail', $product->id) }}"
             >
                 戻る
-            </button>
+            </a>
         </div>
     </form>
 </div>

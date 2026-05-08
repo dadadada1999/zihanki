@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Company;
 
 class Product extends Model
 {
     use HasFactory;
+
+    public function company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 
     /**
      * 商品一覧取得
@@ -20,7 +26,7 @@ class Product extends Model
     /**
      * 商品検索
      */
-    public static function searchProducts($product_name, $company_name)
+    public static function searchProducts($product_name, $company_id)
     {
         $query = self::query();
 
@@ -32,11 +38,10 @@ class Product extends Model
             );
         }
 
-        if (!empty($company_name)) {
+        if (!empty($company_id)) {
             $query->where(
-                'company_name',
-                'LIKE',
-                '%' . $company_name . '%'
+                'company_id',
+                $company_id
             );
         }
 
@@ -48,7 +53,7 @@ class Product extends Model
      */
     public static function createProduct(
         $product_name,
-        $company_name,
+        $company_id,
         $price,
         $stock,
         $comment,
@@ -57,7 +62,7 @@ class Product extends Model
         $product = new self();
 
         $product->product_name = $product_name;
-        $product->company_name = $company_name;
+        $product->company_id = $company_id;
         $product->price = $price;
         $product->stock = $stock;
         $product->comment = $comment;
@@ -94,7 +99,7 @@ class Product extends Model
         $product = self::find($id);
 
         $product->product_name = $request->product_name;
-        $product->company_name = $request->company_name;
+        $product->company_id = $request->company_id;
         $product->price = $request->price;
         $product->stock = $request->stock;
         $product->comment = $request->comment;

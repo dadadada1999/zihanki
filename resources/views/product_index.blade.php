@@ -8,59 +8,34 @@
     method="GET"
     action="{{ route('product.index') }}"
 >
-
     <div class="product_index-search-row">
-
         <div class="product_index-search-item">
-
-    <input
-        class="product_index-search-input"
-        type="text"
-        name="product_name"
-        value="{{ $product_name ?? '' }}"
-        placeholder="検索キーワード"
-    >
-</div>
+            <input
+                class="product_index-search-input"
+                type="text"
+                name="product_name"
+                value="{{ $product_name ?? '' }}"
+                placeholder="検索キーワード"
+            >
+        </div>
 
         <select
-    class="product_index-search-select"
-    name="company_name"
->
+            class="product_index-search-select"
+            name="company_id"
+        >
+            <option value="">
+                メーカー名
+            </option>
 
-    <option
-        value=""
-        disabled
-        selected
-        hidden
-    >
-        メーカー名
-    </option>
-
-    <option
-        value="コカ・コーラ"
-    >
-        コカ・コーラ
-    </option>
-
-    <option
-        value="伊藤園"
-    >
-        伊藤園
-    </option>
-
-    <option
-        value="サントリー"
-    >
-        サントリー
-    </option>
-
-    <option
-        value="キリン"
-    >
-        キリン
-    </option>
-
-</select>
+            @foreach ($companies as $company)
+                <option
+                    value="{{ $company->id }}"
+                    @if (($company_id ?? '') == $company->id) selected @endif
+                >
+                    {{ $company->company_name }}
+                </option>
+            @endforeach
+        </select>
 
         <button
             class="product_index-search-button"
@@ -68,9 +43,7 @@
         >
             検索
         </button>
-
     </div>
-
 </form>
 
 {{-- 一覧テーブル --}}
@@ -83,46 +56,41 @@
         <th>在庫数</th>
         <th>メーカー名</th>
 
-        <th colspan="2"
+        <th
+            colspan="2"
             class="product_index-create-area"
         >
-
-    <form
-        class="product_index-create-form"
-        action="{{ route('product.create') }}"
-        method="GET"
-    >
-        <button
-            class="product_index-create-button"
-            type="submit"
-        >
-            新規登録
-        </button>
-    </form>
+            <form
+                class="product_index-create-form"
+                action="{{ route('product.create') }}"
+                method="GET"
+            >
+                <button
+                    class="product_index-create-button"
+                    type="submit"
+                >
+                    新規登録
+                </button>
+            </form>
         </th>
     </tr>
 
     @foreach ($products as $product)
-
         <tr>
             <td>
                 {{ $product->id }}.
             </td>
 
             <td>
-               @if ($product->img_path)
-
-    <img
-        class="product_index-image"
-        src="{{ asset('storage/' . $product->img_path) }}"
-        alt="商品画像"
-    >
-
-@else
-
-    商品画像
-
-@endif
+                @if ($product->img_path)
+                    <img
+                        class="product_index-image"
+                        src="{{ asset('storage/' . $product->img_path) }}"
+                        alt="商品画像"
+                    >
+                @else
+                    商品画像
+                @endif
             </td>
 
             <td>
@@ -138,24 +106,22 @@
             </td>
 
             <td>
-                {{ $product->company_name }}
+                {{ $product->company->company_name }}
             </td>
 
             <td class="product_index-action-cell">
-
-    <form
-    class="product_index-detail-form"
-    action="{{ route('product.detail', $product->id) }}"
-    method="GET"
->
-    <button
-        class="product_index-detail-button"
-        type="submit"
-    >
-        詳細
-    </button>
-</form>
-
+                <form
+                    class="product_index-detail-form"
+                    action="{{ route('product.detail', $product->id) }}"
+                    method="GET"
+                >
+                    <button
+                        class="product_index-detail-button"
+                        type="submit"
+                    >
+                        詳細
+                    </button>
+                </form>
             </td>
 
             <td class="product_index-action-cell">
@@ -176,6 +142,5 @@
                 </form>
             </td>
         </tr>
-
     @endforeach
 </table>

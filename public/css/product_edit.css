@@ -58,6 +58,19 @@
 }
 
 .product_edit-back-button {
+    box-sizing: border-box;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100px;
+    height: 40px;
+
+    line-height: 1;
+
+    text-decoration: none;
+    color: #000000;
+
     background-color: #87ceeb;
     border: 1px solid #5aa9c9;
 }

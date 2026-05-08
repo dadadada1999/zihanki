@@ -5,10 +5,10 @@
 <div class="product_detail-area">
     <div class="product_detail-item">
         <label class="product_detail-label">
-    <span class="product_detail-id-label">
-        ID
-    </span>
-</label>
+            <span class="product_detail-id-label">
+                ID
+            </span>
+        </label>
 
         <div class="product_detail-value">
             {{ $product->id }}.
@@ -22,19 +22,15 @@
 
         <div class="product_detail-value">
             @if (!empty($product->img_path))
-
                 <img
                     class="product_detail-image"
                     src="{{ asset('storage/' . $product->img_path) }}"
                     alt="商品画像"
                 >
-
             @else
-
                 <div class="product_detail-box">
-                    画像
+                    画像は登録されていません
                 </div>
-
             @endif
         </div>
     </div>
@@ -55,7 +51,7 @@
         </label>
 
         <div class="product_detail-value">
-            {{ $product->company_name }}
+            {{ $product->company->company_name }}
         </div>
     </div>
 
