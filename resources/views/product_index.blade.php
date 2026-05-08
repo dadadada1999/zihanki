@@ -23,9 +23,13 @@
             class="product_index-search-select"
             name="company_id"
         >
-            <option value="">
-                メーカー名
-            </option>
+            <option
+               value=""
+               selected
+               hidden
+            >
+            メーカー名
+        </option>
 
             @foreach ($companies as $company)
                 <option
