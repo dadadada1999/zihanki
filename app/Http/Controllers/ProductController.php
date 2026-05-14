@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Company;
+use App\Http\Requests\ProductStoreRequest;
+use App\Http\Requests\ProductUpdateRequest;
+use Exception;
 
 class ProductController extends Controller
 {
@@ -46,41 +49,32 @@ class ProductController extends Controller
     /**
      * 商品登録処理
      */
-    public function store(Request $request)
+    public function store(ProductStoreRequest $request)
     {
-        $request->validate(
-            [
-                'product_name' => 'required',
-                'company_id' => 'required',
-                'price' => 'required',
-                'stock' => 'required',
-                'img_path' => 'nullable|image',
-            ],
-            [
-                'product_name.required' => '商品名は必須です。',
-                'company_id.required' => 'メーカー名は必須です。',
-                'price.required' => '価格は必須です。',
-                'stock.required' => '在庫数は必須です。',
-            ]
-        );
+        try {
+            $img_path = null;
 
-        $img_path = null;
+            if ($request->hasFile('img_path')) {
+                $img_path = $request->file('img_path')
+                                    ->store('images', 'public');
+            }
 
-        if ($request->hasFile('img_path')) {
-            $img_path = $request->file('img_path')
-                                ->store('images', 'public');
+            Product::createProduct(
+                $request->input('product_name'),
+                $request->input('company_id'),
+                $request->input('price'),
+                $request->input('stock'),
+                $request->input('comment'),
+                $img_path
+            );
+
+            return redirect()->route('product.create');
+        } catch (Exception $e) {
+            return redirect()
+                ->route('product.create')
+                ->withInput()
+                ->with('error', '商品の登録に失敗しました。');
         }
-
-        Product::createProduct(
-            $request->input('product_name'),
-            $request->input('company_id'),
-            $request->input('price'),
-            $request->input('stock'),
-            $request->input('comment'),
-            $img_path
-        );
-
-        return redirect()->route('product.create');
     }
 
     /**
@@ -88,9 +82,15 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        Product::deleteProduct($id);
+        try {
+            Product::deleteProduct($id);
 
-        return redirect()->route('product.index');
+            return redirect()->route('product.index');
+        } catch (Exception $e) {
+            return redirect()
+                ->route('product.index')
+                ->with('error', '商品の削除に失敗しました。');
+        }
     }
 
     /**
@@ -110,54 +110,51 @@ class ProductController extends Controller
      */
     public function edit($id)
     {
-        $product = Product::getProductDetail($id);
-        $companies = Company::getCompanyList();
+        try {
+            $product = Product::getProductDetail($id);
+            $companies = Company::getCompanyList();
 
-        return view('product_edit', [
-            'product' => $product,
-            'companies' => $companies,
-        ]);
+            return view('product_edit', [
+                'product' => $product,
+                'companies' => $companies,
+            ]);
+        } catch (Exception $e) {
+            return redirect()
+                ->route('product.index')
+                ->with('error', '商品情報の取得に失敗しました。');
+        }
     }
 
     /**
      * 商品更新処理
      */
-    public function update(Request $request, $id)
+    public function update(ProductUpdateRequest $request, $id)
     {
-        $request->validate(
-            [
-                'product_name' => 'required',
-                'company_id' => 'required',
-                'price' => 'required',
-                'stock' => 'required',
-                'img_path' => 'nullable|image',
-            ],
-            [
-                'product_name.required' => '商品名は必須です。',
-                'company_id.required' => 'メーカー名は必須です。',
-                'price.required' => '価格は必須です。',
-                'stock.required' => '在庫数は必須です。',
-            ]
-        );
+        try {
+            $product = Product::getProductDetail($id);
+            $img_path = $product->img_path;
 
-        $product = Product::getProductDetail($id);
-        $img_path = $product->img_path;
+            if ($request->hasFile('img_path')) {
+                $img_path = $request->file('img_path')
+                                    ->store('images', 'public');
+            }
 
-        if ($request->hasFile('img_path')) {
-            $img_path = $request->file('img_path')
-                                ->store('images', 'public');
+            Product::updateProduct(
+                $id,
+                $request->input('product_name'),
+                $request->input('company_id'),
+                $request->input('price'),
+                $request->input('stock'),
+                $request->input('comment'),
+                $img_path
+            );
+
+            return redirect()->route('product.edit', $id);
+        } catch (Exception $e) {
+            return redirect()
+                ->route('product.edit', $id)
+                ->withInput()
+                ->with('error', '商品の更新に失敗しました。');
         }
-
-        Product::updateProduct(
-            $id,
-            $request->input('product_name'),
-            $request->input('company_id'),
-            $request->input('price'),
-            $request->input('stock'),
-            $request->input('comment'),
-            $img_path
-        );
-
-        return redirect()->route('product.edit', $id);
     }
 }
