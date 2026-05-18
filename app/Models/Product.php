@@ -29,8 +29,16 @@ class Product extends Model
     /**
      * 商品検索
      */
-    public static function searchProducts($product_name, $company_id)
-    {
+    public static function searchProducts(
+        $product_name,
+        $company_id,
+        $price_min,
+        $price_max,
+        $stock_min,
+        $stock_max,
+        $sort_column,
+        $sort_direction
+    ) {
         $query = self::with('company');
 
         if (!empty($product_name)) {
@@ -42,11 +50,42 @@ class Product extends Model
         }
 
         if (!empty($company_id)) {
-            $query->where(
-                'company_id',
-                $company_id
-            );
+            $query->where('company_id', $company_id);
         }
+
+        if (!empty($price_min)) {
+            $query->where('price', '>=', $price_min);
+        }
+
+        if (!empty($price_max)) {
+            $query->where('price', '<=', $price_max);
+        }
+
+        if (!empty($stock_min)) {
+            $query->where('stock', '>=', $stock_min);
+        }
+
+        if (!empty($stock_max)) {
+            $query->where('stock', '<=', $stock_max);
+        }
+
+        $sort_columns = [
+            'id',
+            'product_name',
+            'price',
+            'stock',
+            'company_id',
+        ];
+
+        if (!in_array($sort_column, $sort_columns, true)) {
+            $sort_column = 'id';
+        }
+
+        if (!in_array($sort_direction, ['asc', 'desc'], true)) {
+            $sort_direction = 'desc';
+        }
+
+        $query->orderBy($sort_column, $sort_direction);
 
         return $query->get();
     }
@@ -116,5 +155,26 @@ class Product extends Model
         $product->img_path = $img_path;
 
         $product->save();
+    }
+
+    /**
+     * 商品購入
+     */
+    public static function buyProduct($product_id)
+    {
+        $product = self::find($product_id);
+
+        if (empty($product)) {
+            return false;
+        }
+
+        if ($product->stock <= 0) {
+            return false;
+        }
+
+        $product->stock = $product->stock - 1;
+        $product->save();
+
+        return true;
     }
 }

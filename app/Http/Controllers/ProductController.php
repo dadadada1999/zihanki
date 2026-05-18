@@ -15,24 +15,48 @@ class ProductController extends Controller
      * 商品一覧画面
      */
     public function index(Request $request)
-    {
-        $product_name = $request->input('product_name');
-        $company_id = $request->input('company_id');
+{
+    $product_name = $request->input('product_name');
+    $company_id = $request->input('company_id');
+    $price_min = $request->input('price_min');
+    $price_max = $request->input('price_max');
+    $stock_min = $request->input('stock_min');
+    $stock_max = $request->input('stock_max');
+    $sort_column = $request->input('sort_column', 'id');
+    $sort_direction = $request->input('sort_direction', 'asc');
 
-        $products = Product::searchProducts(
-            $product_name,
-            $company_id
-        );
+    $products = Product::searchProducts(
+        $product_name,
+        $company_id,
+        $price_min,
+        $price_max,
+        $stock_min,
+        $stock_max,
+        $sort_column,
+        $sort_direction
+    );
 
-        $companies = Company::getCompanyList();
-
-        return view('product_index', [
+    if ($request->ajax()) {
+        return response()->json([
             'products' => $products,
-            'product_name' => $product_name,
-            'company_id' => $company_id,
-            'companies' => $companies,
         ]);
     }
+
+    $companies = Company::getCompanyList();
+
+    return view('product_index', [
+        'products' => $products,
+        'product_name' => $product_name,
+        'company_id' => $company_id,
+        'price_min' => $price_min,
+        'price_max' => $price_max,
+        'stock_min' => $stock_min,
+        'stock_max' => $stock_max,
+        'companies' => $companies,
+        'sort_column' => $sort_column,
+        'sort_direction' => $sort_direction,
+    ]);
+}
 
     /**
      * 商品登録画面
@@ -80,18 +104,30 @@ class ProductController extends Controller
     /**
      * 商品削除
      */
-    public function destroy($id)
-    {
-        try {
-            Product::deleteProduct($id);
+    public function destroy(Request $request, $id)
+{
+    try {
+        Product::deleteProduct($id);
 
-            return redirect()->route('product.index');
-        } catch (Exception $e) {
-            return redirect()
-                ->route('product.index')
-                ->with('error', '商品の削除に失敗しました。');
+        if ($request->ajax()) {
+            return response()->json([
+                'result' => true,
+            ]);
         }
+
+        return redirect()->route('product.index');
+    } catch (Exception $e) {
+        if ($request->ajax()) {
+            return response()->json([
+                'result' => false,
+            ]);
+        }
+
+        return redirect()
+            ->route('product.index')
+            ->with('error', '商品の削除に失敗しました。');
     }
+}
 
     /**
      * 商品詳細画面

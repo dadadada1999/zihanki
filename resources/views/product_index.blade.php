@@ -1,9 +1,14 @@
+@extends('layouts.app')
+
+@section('content')
+
 <link rel="stylesheet" href="{{ asset('css/product_index.css') }}">
 
 <h1>商品一覧画面</h1>
 
 {{-- 検索フォーム --}}
 <form
+    id="productIndexSearchForm"
     class="product_index-search-form"
     method="GET"
     action="{{ route('product.index') }}"
@@ -24,12 +29,12 @@
             name="company_id"
         >
             <option
-               value=""
-               selected
-               hidden
+                value=""
+                selected
+                hidden
             >
-            メーカー名
-        </option>
+                メーカー名
+            </option>
 
             @foreach ($companies as $company)
                 <option
@@ -40,6 +45,60 @@
                 </option>
             @endforeach
         </select>
+
+        <div class="product_index-search-item">
+            <input
+                class="product_index-search-input"
+                type="text"
+                name="price_min"
+                value="{{ $price_min ?? '' }}"
+                placeholder="価格下限"
+            >
+        </div>
+
+        <div class="product_index-search-item">
+            <input
+                class="product_index-search-input"
+                type="text"
+                name="price_max"
+                value="{{ $price_max ?? '' }}"
+                placeholder="価格上限"
+            >
+        </div>
+
+        <div class="product_index-search-item">
+            <input
+                class="product_index-search-input"
+                type="text"
+                name="stock_min"
+                value="{{ $stock_min ?? '' }}"
+                placeholder="在庫下限"
+            >
+        </div>
+
+        <div class="product_index-search-item">
+            <input
+                class="product_index-search-input"
+                type="text"
+                name="stock_max"
+                value="{{ $stock_max ?? '' }}"
+                placeholder="在庫上限"
+            >
+        </div>
+
+        <input
+            id="productIndexSortColumn"
+            type="hidden"
+            name="sort_column"
+            value="{{ $sort_column ?? 'id' }}"
+        >
+
+        <input
+            id="productIndexSortDirection"
+            type="hidden"
+            name="sort_direction"
+            value="{{ $sort_direction ?? 'asc' }}"
+        >
 
         <button
             class="product_index-search-button"
@@ -52,101 +111,139 @@
 
 {{-- 一覧テーブル --}}
 <table class="product_index-table">
-    <tr>
-        <th><span class="product_index-id">ID</span></th>
-        <th>商品画像</th>
-        <th>商品名</th>
-        <th>価格</th>
-        <th>在庫数</th>
-        <th>メーカー名</th>
-
-        <th
-            colspan="2"
-            class="product_index-create-area"
-        >
-            <form
-                class="product_index-create-form"
-                action="{{ route('product.create') }}"
-                method="GET"
-            >
-                <button
-                    class="product_index-create-button"
-                    type="submit"
-                >
-                    新規登録
-                </button>
-            </form>
-        </th>
-    </tr>
-
-    @foreach ($products as $product)
+    <thead>
         <tr>
-            <td>
-                {{ $product->id }}.
-            </td>
+            <th
+                class="product_index-sort"
+                data-sort-column="id"
+            >
+                ID
+            </th>
 
-            <td>
-                @if ($product->img_path)
-                    <img
-                        class="product_index-image"
-                        src="{{ asset('storage/' . $product->img_path) }}"
-                        alt="商品画像"
-                    >
-                @else
-                    商品画像
-                @endif
-            </td>
+            <th>商品画像</th>
 
-            <td>
-                {{ $product->product_name }}
-            </td>
+            <th
+                class="product_index-sort"
+                data-sort-column="product_name"
+            >
+                商品名
+            </th>
 
-            <td>
-                ¥{{ $product->price }}
-            </td>
+            <th
+                class="product_index-sort"
+                data-sort-column="price"
+            >
+                価格
+            </th>
 
-            <td>
-                {{ $product->stock }}
-            </td>
+            <th
+                class="product_index-sort"
+                data-sort-column="stock"
+            >
+                在庫数
+            </th>
 
-            <td>
-                {{ $product->company->company_name }}
-            </td>
+            <th
+                class="product_index-sort"
+                data-sort-column="company_id"
+            >
+                メーカー名
+            </th>
 
-            <td class="product_index-action-cell">
+            <th
+                colspan="2"
+                class="product_index-create-area"
+            >
                 <form
-                    class="product_index-detail-form"
-                    action="{{ route('product.detail', $product->id) }}"
+                    class="product_index-create-form"
+                    action="{{ route('product.create') }}"
                     method="GET"
                 >
                     <button
-                        class="product_index-detail-button"
+                        class="product_index-create-button"
                         type="submit"
                     >
-                        詳細
+                        新規登録
                     </button>
                 </form>
-            </td>
-
-            <td class="product_index-action-cell">
-                <form
-                    class="product_index-delete-form"
-                    action="{{ route('product.delete', $product->id) }}"
-                    method="POST"
-                >
-                    @csrf
-                    @method('DELETE')
-
-                    <button
-                        class="product_index-delete-button"
-                        type="submit"
-                    >
-                        削除
-                    </button>
-                </form>
-            </td>
+            </th>
         </tr>
-    @endforeach
+    </thead>
+
+    <tbody id="productIndexTableBody">
+        @foreach ($products as $product)
+            <tr>
+                <td>
+                    {{ $product->id }}.
+                </td>
+
+                <td>
+                    @if ($product->img_path)
+                        <img
+                            class="product_index-image"
+                            src="{{ asset('storage/' . $product->img_path) }}"
+                            alt="商品画像"
+                        >
+                    @else
+                        商品画像
+                    @endif
+                </td>
+
+                <td>
+                    {{ $product->product_name }}
+                </td>
+
+                <td>
+                    ¥{{ $product->price }}
+                </td>
+
+                <td>
+                    {{ $product->stock }}
+                </td>
+
+                <td>
+                    {{ $product->company->company_name }}
+                </td>
+
+                <td class="product_index-action-cell">
+                    <form
+                        class="product_index-detail-form"
+                        action="{{ route('product.detail', $product->id) }}"
+                        method="GET"
+                    >
+                        <button
+                            class="product_index-detail-button"
+                            type="submit"
+                        >
+                            詳細
+                        </button>
+                    </form>
+                </td>
+
+                <td class="product_index-action-cell">
+                    <form
+                        class="product_index-delete-form"
+                        action="{{ route('product.delete', $product->id) }}"
+                        method="POST"
+                    >
+                        @csrf
+                        @method('DELETE')
+
+                        <button
+                            class="product_index-delete-button"
+                            type="submit"
+                        >
+                            削除
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        @endforeach
+    </tbody>
 </table>
 
-<script src="{{ asset('js/product_index.js') }}"></script>
+@push('scripts')
+    <script src="{{ asset('js/product_index.js') }}"></script>
+@endpush
+
+@endsection
